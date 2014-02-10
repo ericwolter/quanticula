@@ -1,0 +1,216 @@
+@font-face {
+    font-family: 'Source Sans';
+
+    src: url('fonts/SourceSansPro-Regular.otf');
+}
+
+@font-face {
+    font-family: 'Source Sans';
+    font-weight: 200;
+
+    src: url('fonts/SourceSansPro-Light.otf');
+}
+
+@font-face {
+    font-family: 'Source Sans';
+    font-weight: 600;
+
+    src: url('fonts/SourceSansPro-Semibold.otf');
+}
+
+*:focus
+{
+    outline: none;
+}
+
+*, *:before, *:after
+{
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+body
+{
+    font-family: 'Source Sans', helvetica, arial, sans-serif;
+
+    overflow: hidden;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+input::-webkit-outer-spin-button, /* Removes arrows */
+input::-webkit-inner-spin-button, /* Removes arrows */
+input::-webkit-clear-button, /* Removes blue cross */
+input
+{
+    margin: 0;
+
+    -webkit-border-radius: 0;
+            border-radius: 0;
+
+    -webkit-appearance: none;
+}
+
+fieldset
+{
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+}
+
+#scrollable
+{
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+.ew-content
+{
+    height: 100%;
+
+    background: #efeff4;
+}
+
+.ew-input
+{
+    font-family: 'Source Sans', helvetica, arial, sans-serif;
+    font-size: 15px;
+    line-height: 22px;
+
+    width: 100%;
+    height: 42px;
+    padding: 8px 12px 8px 20px;
+
+    border: 0;
+    border-top: 1px solid #e5e5eb;
+}
+
+.ew-input:last-child
+{
+    border-bottom: 1px solid #e5e5eb;
+}
+
+.ew-header
+{
+    font-size: 15px;
+
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid #c0c0c0;
+    background: #fff;
+}
+
+.ew-list
+{
+    margin: 0;
+    margin-bottom: 20px;
+    padding: 0;
+
+    list-style-type: none;
+
+    border-top: 1px solid #e5e5eb;
+    border-bottom: 1px solid #e5e5eb;
+    background: #fff;
+}
+
+.ew-listitem, li
+{
+    line-height: 66px;
+
+    height: 66px;
+
+    text-indent: 20px;
+
+    border-bottom: 1px solid #e5e5eb;
+}
+
+.swipable
+{
+    cursor: pointer;
+
+    background: #fff;
+}
+
+.swipable .left
+{
+    font-family: 'Icomatic','sans-serif';
+    line-height: 66px;
+
+    position: absolute;
+    top: 0;
+    left: -66px;
+
+    width: 66px;
+    height: 66px;
+
+    text-align: center;
+    text-indent: 0;
+
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: 'liga', 'dlig';
+        -ms-font-feature-settings: 'liga', 'dlig';
+       -moz-font-feature-settings: 'liga', 'dlig';
+         -o-font-feature-settings: 'liga', 'dlig';
+            font-feature-settings: 'liga', 'dlig';
+    -webkit-font-smoothing: antialiased;
+}
+
+.swipable .right
+{
+    font-family: 'Icomatic','sans-serif';
+    line-height: 66px;
+
+    position: absolute;
+    top: 0;
+    right: -66px;
+
+    width: 66px;
+    height: 66px;
+
+    text-align: center;
+    text-indent: 0;
+
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: 'liga', 'dlig';
+        -ms-font-feature-settings: 'liga', 'dlig';
+       -moz-font-feature-settings: 'liga', 'dlig';
+         -o-font-feature-settings: 'liga', 'dlig';
+            font-feature-settings: 'liga', 'dlig';
+    -webkit-font-smoothing: antialiased;
+}
+
+.ew-listitem:last-child, li:last-child
+{
+    border: 0;
+}
+
+.ew-btn
+{
+    font-size: 14px;
+    line-height: 44px;
+
+    display: inline-block;
+
+    height: 44px;
+    padding: 0 20px;
+
+    text-align: center;
+
+    border: 0;
+    border-radius: 4px;
+
+    -webkit-appearance: none;
+}
+
+.ew-btn-green
+{
+    font-weight: 500;
+
+    color: white;
+    background: #46ca5e;
+    box-shadow: none;
+}

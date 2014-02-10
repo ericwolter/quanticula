@@ -1,0 +1,183 @@
+html, body
+{
+    height: 100%;
+
+    background: #fff;
+}
+
+body
+{
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+#loader
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    text-align: center;
+
+    background: rgba(255,255,255,.8);
+}
+
+#loader span
+{
+    line-height: 200px;
+
+    position: relative;
+    top: 50%;
+    left: 0;
+
+    width: 100%;
+    margin: auto;
+    margin-top: -100px;
+}
+
+.ew-btn
+{
+    width:    -moz-calc(100% - 20px);
+    width: -webkit-calc(100% - 20px);
+    width:      -o-calc(100% - 20px);
+    width:         calc(100% - 20px);
+    margin: 10px 10px;
+}
+
+.ew-btn:active
+{
+    opacity: .6;
+}
+
+#action-input
+{
+    display: inline;
+
+    width: 60%;
+
+    border-bottom: 1px solid #e5e5eb;
+}
+
+#value-input
+{
+    display: inline;
+
+    width: 39%;
+
+    border-bottom: 1px solid #e5e5eb;
+}
+
+.center
+{
+    position: relative;
+}
+
+.timestamp
+{
+    font-size: 12px;
+    line-height: 12px;
+
+    position: absolute;
+    top: 10px;
+    right: 20px;
+
+    height: 12px;
+
+    color: #46ca5e;
+}
+
+.action
+{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+
+    position: absolute;
+    top: 13px;
+
+    height: 16px;
+}
+
+.value
+{
+    font-size: 16px;
+    font-weight: 200;
+    line-height: 16px;
+
+    position: absolute;
+    top: 37px;
+
+    height: 16px;
+}
+
+#wrapper
+{
+    position: relative;
+
+    overflow: hidden;
+}
+
+#suggestions
+{
+    display: none;
+
+    cursor: pointer;
+}
+
+#dialog
+{
+    font-size: 14px;
+
+    position: fixed;
+    z-index: 2;
+    top: 20%;
+    left: 50%;
+
+    display: none;
+
+    width: 250px;
+    margin-left: -125px;
+
+    text-align: center;
+
+    color: #333;
+    border-radius: 6px 6px 6px 6px;
+    background: none repeat scroll 0 0 #fff;
+}
+
+#dialog .controls
+{
+    margin-top: 12px;
+
+    border-top: 1px solid #9daca9;
+}
+
+#dialog a
+{
+    font-size: 16px;
+
+    -moz-box-sizing: border-box;
+         box-sizing: border-box;
+    width: 125px;
+    padding: 12px;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    color: #288edf;
+}
+
+#dialog #yes
+{
+    float: right;
+}
+
+#dialog #no
+{
+    float: left;
+
+    border-right: 1px solid #9daca9;
+}
