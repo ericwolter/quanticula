@@ -161,7 +161,11 @@ var TrackulaApp = TrackulaApp || {
                 return Bloodhound.tokenizers.whitespace(d.val);
             },
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: Object.keys(local).map(function(v) {return {val:v};})
+            local: Object.keys(local).map(function(v) {
+                return {
+                    val: v
+                };
+            })
         });
         bloodhound.initialize();
 
@@ -213,16 +217,19 @@ var TrackulaApp = TrackulaApp || {
                 if (distance > parseInt(right.css('width'))) {
                     $('.ew-content').css('filter', 'blur(10px)');
                     $('.ew-content').css('-webkit-filter', 'blur(10px)');
+                    $('.ew-content').fadeTo(0, 0.2);
                     var id = $(self).attr('data-record-id');
                     Dialog.show('Delete Action', 'Are you sure you want to delete this action?', 'Yes. Delete it.', 'No. Cancel.', function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
+                        $('.ew-content').fadeTo(0,1.0);
 
                         console.log('delete: ' + id);
                         TrackulaApp.actions.get(id).deleteRecord();
                     }, function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
+                        $('.ew-content').fadeTo(0,1.0);
                         console.log('cancel: ' + id);
                     });
                 }
@@ -234,9 +241,11 @@ var TrackulaApp = TrackulaApp || {
                     Dialog.show('test', 'message', 'yes', 'no', function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
+                        $('.ew-content').fadeIn();
                     }, function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
+                        $('.ew-content').fadeIn();
                     });
                 }
             }
