@@ -171,6 +171,11 @@ body
     color: #288edf;
 }
 
+#dialog input {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
 #dialog #yes
 {
     font-weight: 600;

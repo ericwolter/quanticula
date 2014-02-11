@@ -213,21 +213,6 @@ var TrackulaApp = TrackulaApp || {
 
         $('.swipable').swipe(swiper);
     },
-    updateAction: function() {
-        // var action = TrackulaApp.actions[id];
-        // if ('action' in obj) {
-        //     action.a = obj.action;
-        // }
-        // if ('value' in obj) {
-        //     action.v = obj.value;
-        // }
-        // if ('timestamp' in obj) {
-        //     action.t = obj.timestamp;
-        // }
-        // TrackulaApp.actions[id] = action;
-
-        // localStorage.setItem('quanticula-actions', LZString.compressToUTF16(JSON.stringify(TrackulaApp.actions)));
-    },
     deleteAction: function(id) {
         delete TrackulaApp.actions[id];
     },
