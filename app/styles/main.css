@@ -173,6 +173,8 @@ body
 
 #dialog #yes
 {
+    font-weight: 600;
+
     float: right;
 }
 
