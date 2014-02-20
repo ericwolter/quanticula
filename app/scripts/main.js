@@ -5,11 +5,23 @@
 /* global LZString:false */
 /* global ScrollFix:false */
 /* global templates:false */
+/* global D:false */
 'use strict';
 
 if (window.navigator.standalone) {
     $(document.body).css('margin-top', '20px');
     $('meta[name="apple-mobile-web-app-status-bar-style"]').remove();
+}
+
+function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+}
+
+function guid() {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
 }
 
 moment.lang('en', {
@@ -111,6 +123,7 @@ var TrackulaApp = TrackulaApp || {
             try {
                 storedActions = JSON.parse(storedActions);
                 TrackulaApp.actions = storedActions;
+                D.log('loaded actions from localstorage');
             } catch (e) {}
         }
 
@@ -121,7 +134,7 @@ var TrackulaApp = TrackulaApp || {
             interactive: false
         }, function(error) {
             if (error) {
-                console.log('OAuth error (interactive:false): ' + error);
+                D.log('OAuth error (interactive:false): ' + error);
             }
         });
 
@@ -131,11 +144,12 @@ var TrackulaApp = TrackulaApp || {
         if (client.isAuthenticated()) {
             client.getDatastoreManager().openDefaultDatastore(function(error, Datastore) {
                 if (error) {
-                    console.log('Datastore error: ' + error);
+                    D.log('Datastore error: ' + error);
                 }
+                D.log('opened datastore');
                 TrackulaApp.table = Datastore.getTable('actions');
                 TrackulaApp.sync();
-                Datastore.recordsChanged.addListener(TrackulaApp.recordsChanged);
+                //Datastore.recordsChanged.addListener(TrackulaApp.recordsChanged);
             });
         } else {
             client.authenticate({}, function(error) {
@@ -145,16 +159,83 @@ var TrackulaApp = TrackulaApp || {
             });
         }
     },
+    isOffline: function() {
+        return TrackulaApp.table ? true : false;
+    },
     sync: function() {
         var records = TrackulaApp.table.query();
+
+        var recordsMap = {};
         for (var i = records.length - 1; i >= 0; i--) {
-            var record = records[i];
-            TrackulaApp.actions[record.getId()] = {
-                a: record.get('action'),
-                v: record.get('value'),
-                t: record.get('timestamp')
-            };
+            recordsMap[records[i].getId()] = records[i];
         }
+
+        for (var id in TrackulaApp.actions) {
+            var action = TrackulaApp.actions[id];
+            if (id in recordsMap) {
+                var record = recordsMap[id];
+                if (action.unsynced) {
+                    D.log('sync previously unsynced action');
+                    if (action.deleted) {
+                        D.log('sync retrying delete');
+                        TrackulaApp.table.get(id).deleteRecord();
+                    } else {
+                        if (action.edited) {
+                            if (action.a === record.get('action') &&
+                                action.v === record.get('value') &&
+                                action.t === record.get('timestamp')) {
+                                delete TrackulaApp.actions[id].unsynced;
+                                delete TrackulaApp.actions[id].edited;
+                                D.log('sync successful edit');
+                            } else {
+                                D.log('sync retrying edit');
+                                TrackulaApp.table.get(id).update({
+                                    action: action.a,
+                                    value: Dropbox.Datastore.int64(action.v),
+                                    timestamp: Dropbox.Datastore.int64(action.t)
+                                });
+                            }
+                        } else {
+                            TrackulaApp.actions[record.getId()] = {
+                                a: record.get('action'),
+                                v: record.get('value'),
+                                t: record.get('timestamp')
+                            };
+                            D.log('sync successful insert');
+                        }
+                    }
+                } else {
+                    D.log('sync external change');
+                    TrackulaApp.actions[record.getId()] = {
+                        a: record.get('action'),
+                        v: record.get('value'),
+                        t: record.get('timestamp')
+                    };
+                }
+            } else {
+                if (action.inserted) {
+                    D.log('sync retrying insert');
+                    delete TrackulaApp.actions[id];
+
+                    var newRecord = TrackulaApp.table.insert({
+                        action: action.a,
+                        value: Dropbox.Datastore.int64(action.v),
+                        timestamp: Dropbox.Datastore.int64(action.t)
+                    });
+                    TrackulaApp.actions[newRecord.getId()] = {
+                        a: newRecord.get('action'),
+                        v: newRecord.get('value'),
+                        t: newRecord.get('timestamp'),
+                        inserted: true,
+                        unsynced: true
+                    };
+                } else {
+                    D.log('sync successful delete');
+                    delete TrackulaApp.actions[id];
+                }
+            }
+        }
+
         localStorage.setItem('quanticula-actions', LZString.compressToUTF16(JSON.stringify(TrackulaApp.actions)));
         TrackulaApp.listActions();
     },
@@ -163,11 +244,75 @@ var TrackulaApp = TrackulaApp || {
         $('#datetime').val(moment().format('YYYY-MM-DDTHH:mm'));
     },
     insertAction: function(action, value, timestamp) {
-        TrackulaApp.table.insert({
-            action: action,
-            value: Dropbox.Datastore.int64(value),
-            timestamp: Dropbox.Datastore.int64(timestamp.unix())
-        });
+        if (TrackulaApp.isOffline) {
+            TrackulaApp.actions[guid()] = {
+                a: action,
+                v: value,
+                t: timestamp.unix(),
+                unsynced: true,
+                inserted: true
+            };
+            D.log('inserted action offline');
+        } else {
+            var record = TrackulaApp.table.insert({
+                action: action,
+                value: Dropbox.Datastore.int64(value),
+                timestamp: Dropbox.Datastore.int64(timestamp.unix())
+            });
+            TrackulaApp.actions[record.getId()] = {
+                a: record.get('action'),
+                v: record.get('value'),
+                t: record.get('timestamp'),
+                inserted: true,
+                unsynced: true
+            };
+            D.log('inserted action (temp)online');
+        }
+
+        localStorage.setItem('quanticula-actions', LZString.compressToUTF16(JSON.stringify(TrackulaApp.actions)));
+        TrackulaApp.listActions();
+    },
+    editAction: function(id, obj) {
+        var action = TrackulaApp.actions[id];
+        if ('action' in obj) {
+            action.a = obj.action;
+        }
+        if ('value' in obj) {
+            action.v = obj.value;
+        }
+        if ('timestamp' in obj) {
+            action.t = obj.timestamp.unix();
+        }
+        action.edited = true;
+        action.unsynced = true;
+        TrackulaApp.actions[id] = action;
+        if (!TrackulaApp.isOffline) {
+            TrackulaApp.table.get(id).update({
+                action: action.a,
+                value: Dropbox.Datastore.int64(action.v),
+                timestamp: Dropbox.Datastore.int64(action.t)
+            });
+            D.log('edited action (temp)online');
+        } else {
+            D.log('edited action offline');
+        }
+
+        localStorage.setItem('quanticula-actions', LZString.compressToUTF16(JSON.stringify(TrackulaApp.actions)));
+        TrackulaApp.listActions();
+    },
+    deleteAction: function(id) {
+        TrackulaApp.actions[id].deleted = true;
+        TrackulaApp.actions[id].unsynced = true;
+
+        if (!TrackulaApp.isOffline) {
+            TrackulaApp.table.get(id).deleteRecord();
+            D.log('deleted action (temp)online');
+        } else {
+            D.log('deleted action offline');
+        }
+
+        localStorage.setItem('quanticula-actions', LZString.compressToUTF16(JSON.stringify(TrackulaApp.actions)));
+        TrackulaApp.listActions();
     },
     listActions: function() {
         var list = $('#actionlist');
@@ -191,10 +336,12 @@ var TrackulaApp = TrackulaApp || {
         for (var i = sortByTimestamp.length - 1; i >= 0; i--) {
             id = sortByTimestamp[i].id;
             var record = TrackulaApp.actions[id];
-            list.append(templates.listitem(id, record.a, record.v, record.t * 1000));
+            if (!record.deleted) {
+                list.append(templates.listitem(id, record.a, record.v, record.t * 1000));
 
-            if (!(record.a in predictions)) {
-                predictions[record.a] = 0;
+                if (!(record.a in predictions)) {
+                    predictions[record.a] = 0;
+                }
             }
         }
 
@@ -212,28 +359,8 @@ var TrackulaApp = TrackulaApp || {
         bloodhound.initialize();
 
         $('.swipable').swipe(swiper);
-    },
-    deleteAction: function(id) {
-        delete TrackulaApp.actions[id];
-    },
-    recordsChanged: function(ev) {
-        var affected = ev.affectedRecordsForTable('actions');
 
-        for (var i = affected.length - 1; i >= 0; i--) {
-            var record = affected[i];
-            if (record.isDeleted()) {
-                delete TrackulaApp.actions[record.getId()];
-            } else { // insert or update
-                TrackulaApp.actions[record.getId()] = {
-                    a: record.get('action'),
-                    v: record.get('value'),
-                    t: record.get('timestamp')
-                };
-            }
-        }
-
-        localStorage.setItem('quanticula-actions', LZString.compressToUTF16(JSON.stringify(TrackulaApp.actions)));
-        TrackulaApp.listActions();
+        D.log('listed actions');
     },
     onSubmit: function(ev) {
         ev.preventDefault();
@@ -268,27 +395,23 @@ var TrackulaApp = TrackulaApp || {
         else if (phase === 'end') {
             TrackulaApp.scrollListItems($(self), 0, swiper.speed);
 
-            console.log(self);
-
+            var id = $(self).attr('data-record-id');
             if (direction === 'left') {
                 var right = $(self).find('.right');
                 if (distance > parseInt(right.css('width'))) {
                     $('.ew-content').css('filter', 'blur(10px)');
                     $('.ew-content').css('-webkit-filter', 'blur(10px)');
                     $('.ew-content').fadeTo(0, 0.2);
-                    // var id = $(self).attr('data-record-id');
                     Dialog.show('Delete Action', 'Are you sure you want to delete this action?', 'Yes. Delete it.', 'No. Cancel.', function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
                         $('.ew-content').fadeTo(0, 1.0);
 
-                        // console.log('delete: ' + id);
-                        // TrackulaApp.actions.get(id).deleteRecord();
+                        TrackulaApp.deleteAction(id);
                     }, function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
                         $('.ew-content').fadeTo(0, 1.0);
-                        // console.log('cancel: ' + id);
                     });
                 }
             } else if (direction === 'right') {
@@ -296,7 +419,6 @@ var TrackulaApp = TrackulaApp || {
                 if (distance > parseInt(left.css('width'))) {
                     $('.ew-content').css('filter', 'blur(10px)');
                     $('.ew-content').css('-webkit-filter', 'blur(10px)');
-                    var id = $(self).attr('data-record-id');
                     Dialog.show('Edit Action', templates.editcontrols(TrackulaApp.actions[id]), 'Yes. Change it.', 'No. Cancel.', function() {
                         $('.ew-content').css('filter', '');
                         $('.ew-content').css('-webkit-filter', '');
@@ -306,10 +428,10 @@ var TrackulaApp = TrackulaApp || {
                         var action = $('#dialog #action-input').val();
                         var value = $('#dialog #value-input').val();
 
-                        TrackulaApp.table.get(id).update({
+                        TrackulaApp.editAction(id, {
                             action: action,
-                            value: Dropbox.Datastore.int64(value),
-                            timestamp: Dropbox.Datastore.int64(timestamp.unix())
+                            value: value,
+                            timestamp: timestamp
                         });
                     }, function() {
                         $('.ew-content').css('filter', '');
