@@ -163,17 +163,30 @@ var TrackulaApp = TrackulaApp || {
         return TrackulaApp.table ? true : false;
     },
     sync: function() {
+        var id, record;
         var records = TrackulaApp.table.query();
+
 
         var recordsMap = {};
         for (var i = records.length - 1; i >= 0; i--) {
-            recordsMap[records[i].getId()] = records[i];
+            record = records[i];
+            id = record.getId();
+            recordsMap[id] = records[i];
+
+            if (!(id in TrackulaApp.actions)) {
+                TrackulaApp.actions[id] = {
+                    a: record.get('action'),
+                    v: record.get('value'),
+                    t: record.get('timestamp')
+                };
+                D.log('sync external insert');
+            }
         }
 
-        for (var id in TrackulaApp.actions) {
+        for (id in TrackulaApp.actions) {
             var action = TrackulaApp.actions[id];
             if (id in recordsMap) {
-                var record = recordsMap[id];
+                record = recordsMap[id];
                 if (action.unsynced) {
                     D.log('sync previously unsynced action');
                     if (action.deleted) {
