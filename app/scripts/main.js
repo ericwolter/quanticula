@@ -85,7 +85,7 @@ var TrackulaApp = TrackulaApp || {
         var scrollable = document.getElementById('scrollable');
         new ScrollFix(scrollable);
         var timer;
-        $(scrollable).scroll(function(ev) {
+        $(scrollable).scroll(function() {
             $('#google-adsense').hide();
             clearTimeout(timer);
             timer = setTimeout(function() {

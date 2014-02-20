@@ -205,9 +205,11 @@ body
     border-top: 1px solid #c0c0c0;
 }
 
-#google-adsense:before {
+#google-adsense:after {
+    position: absolute;
+    top: 4px;
+    left: 4px;
     content: 'advertisement';
-    margin-left: 6px;
 
     font-size: 12px;
     font-weight: 200;
