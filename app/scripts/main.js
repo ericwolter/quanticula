@@ -84,6 +84,14 @@ var TrackulaApp = TrackulaApp || {
 
         var scrollable = document.getElementById('scrollable');
         new ScrollFix(scrollable);
+        var timer;
+        $(scrollable).scroll(function(ev) {
+            $('#google-adsense').hide();
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                $('#google-adsense').fadeIn();
+            },150);
+        });
 
         swiper.swipeStatus = TrackulaApp.onSwipe;
 
