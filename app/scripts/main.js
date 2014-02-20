@@ -244,7 +244,7 @@ var TrackulaApp = TrackulaApp || {
         $('#datetime').val(moment().format('YYYY-MM-DDTHH:mm'));
     },
     insertAction: function(action, value, timestamp) {
-        if (TrackulaApp.isOffline) {
+        if (TrackulaApp.isOffline()) {
             TrackulaApp.actions[guid()] = {
                 a: action,
                 v: value,
@@ -286,7 +286,7 @@ var TrackulaApp = TrackulaApp || {
         action.edited = true;
         action.unsynced = true;
         TrackulaApp.actions[id] = action;
-        if (!TrackulaApp.isOffline) {
+        if (!TrackulaApp.isOffline()) {
             TrackulaApp.table.get(id).update({
                 action: action.a,
                 value: Dropbox.Datastore.int64(action.v),
@@ -304,7 +304,7 @@ var TrackulaApp = TrackulaApp || {
         TrackulaApp.actions[id].deleted = true;
         TrackulaApp.actions[id].unsynced = true;
 
-        if (!TrackulaApp.isOffline) {
+        if (!TrackulaApp.isOffline()) {
             TrackulaApp.table.get(id).deleteRecord();
             D.log('deleted action (temp)online');
         } else {
