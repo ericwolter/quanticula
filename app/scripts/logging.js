@@ -5,7 +5,7 @@
 var D = {
 
     // should we log messages to the console
-    debug: false,
+    debug: true,
 
     // can we log messages to the console
     canLog: (typeof console !== 'undefined' && typeof console.log !== 'undefined'),
