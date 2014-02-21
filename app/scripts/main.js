@@ -79,6 +79,77 @@ bloodhound.initialize();
 var TrackulaApp = TrackulaApp || {
     actions: null,
     table: null,
+    local: {
+        create: function(id, action, value, timestamp, local) {
+            var obj = {
+                a: action,
+                v: value,
+                t: timestamp
+            };
+
+            if (local) {
+                obj.unsynced = true;
+                obj.inserted = true;
+            }
+
+            TrackulaApp.actions[id] = obj;
+
+            return TrackulaApp.actions[id];
+        },
+        update: function(id, action, value, timestamp, local) {
+            var obj = TrackulaApp.actions[id];
+            if (action) {
+                obj.a = action;
+            }
+            if (value) {
+                obj.v = value;
+            }
+            if (timestamp) {
+                obj.t = timestamp;
+            }
+
+            if (local) {
+                obj.unsynced = true;
+                obj.edited = true;
+            }
+
+            TrackulaApp.actions[id] = obj;
+
+            return TrackulaApp.actions[id];
+        },
+        delete: function(id) {
+            TrackulaApp.actions[id].deleted = true;
+            TrackulaApp.actions[id].unsynced = true;
+
+            return TrackulaApp.actions[id];
+        },
+    },
+    remote: {
+        create: function(action, value, timestamp) {
+            return TrackulaApp.table.insert({
+                action: action,
+                value: Dropbox.Datastore.int64(value),
+                timestamp: Dropbox.Datastore.int64(timestamp.unix())
+            });
+        },
+        update: function(id, action, value, timestamp) {
+            var obj = {};
+            if (action) {
+                obj.action = action;
+            }
+            if (value) {
+                obj.value = Dropbox.Datastore.int64(value);
+            }
+            if (timestamp) {
+                obj.value = Dropbox.Datastore.int64(timestamp);
+            }
+
+            return TrackulaApp.table.get(id).update(obj);
+        },
+        delete: function(id) {
+            return TrackulaApp.table.get(id).deleteRecord();
+        }
+    },
     init: function() {
         FastClick.attach(document.body);
 
@@ -90,7 +161,7 @@ var TrackulaApp = TrackulaApp || {
             clearTimeout(timer);
             timer = setTimeout(function() {
                 $('#google-adsense').fadeIn();
-            },150);
+            }, 150);
         });
 
         swiper.swipeStatus = TrackulaApp.onSwipe;
@@ -174,7 +245,6 @@ var TrackulaApp = TrackulaApp || {
         var id, record;
         var records = TrackulaApp.table.query();
 
-
         var recordsMap = {};
         for (var i = records.length - 1; i >= 0; i--) {
             record = records[i];
@@ -182,12 +252,8 @@ var TrackulaApp = TrackulaApp || {
             recordsMap[id] = records[i];
 
             if (!(id in TrackulaApp.actions)) {
-                TrackulaApp.actions[id] = {
-                    a: record.get('action'),
-                    v: record.get('value'),
-                    t: record.get('timestamp')
-                };
-                D.log('sync external insert');
+                TrackulaApp.local.create(id, record.get('action'), record.get('value'), record.get('timestamp'), false);
+                D.log('sync external create');
             }
         }
 
@@ -199,7 +265,7 @@ var TrackulaApp = TrackulaApp || {
                     D.log('sync previously unsynced action');
                     if (action.deleted) {
                         D.log('sync retrying delete');
-                        TrackulaApp.table.get(id).deleteRecord();
+                        TrackulaApp.remote.delete(id);
                     } else {
                         if (action.edited) {
                             if (action.a === record.get('action') &&
@@ -207,49 +273,32 @@ var TrackulaApp = TrackulaApp || {
                                 action.t === record.get('timestamp')) {
                                 delete TrackulaApp.actions[id].unsynced;
                                 delete TrackulaApp.actions[id].edited;
-                                D.log('sync successful edit');
+                                D.log('sync successful update');
                             } else {
-                                D.log('sync retrying edit');
-                                TrackulaApp.table.get(id).update({
-                                    action: action.a,
-                                    value: Dropbox.Datastore.int64(action.v),
-                                    timestamp: Dropbox.Datastore.int64(action.t)
-                                });
+                                D.log('sync retrying update');
+                                TrackulaApp.remote.update(id, action.a, action.v, action.t);
                             }
                         } else {
-                            TrackulaApp.actions[record.getId()] = {
-                                a: record.get('action'),
-                                v: record.get('value'),
-                                t: record.get('timestamp')
-                            };
-                            D.log('sync successful insert');
+                            TrackulaApp.local.update(record.getId(), record.get('action'), record.get('value'), record.get('timestamp'), false);
+                            D.log('sync successful create');
                         }
                     }
                 } else {
-                    D.log('sync external change');
-                    TrackulaApp.actions[record.getId()] = {
-                        a: record.get('action'),
-                        v: record.get('value'),
-                        t: record.get('timestamp')
-                    };
+                    D.log('sync external update');
+                    TrackulaApp.local.update(record.getId(), record.get('action'), record.get('value'), record.get('timestamp'), false);
                 }
             } else {
                 if (action.inserted) {
-                    D.log('sync retrying insert');
+                    D.log('sync retrying create');
+
+                    // if the action was created while offline it will still have a temporary guid
+                    // since we are now definitly at least semi-online we can get a true dropbox id
+                    // so in order to exchange the id we need to completely delete the old key
+                    // in the associative array
                     delete TrackulaApp.actions[id];
 
-                    var newRecord = TrackulaApp.table.insert({
-                        action: action.a,
-                        value: Dropbox.Datastore.int64(action.v),
-                        timestamp: Dropbox.Datastore.int64(action.t)
-                    });
-                    TrackulaApp.actions[newRecord.getId()] = {
-                        a: newRecord.get('action'),
-                        v: newRecord.get('value'),
-                        t: newRecord.get('timestamp'),
-                        inserted: true,
-                        unsynced: true
-                    };
+                    record = TrackulaApp.remote.create(action.a, action.v, action.t);
+                    TrackulaApp.local.create(record.getId(), action.a, action.v, action.t, true);
                 } else {
                     D.log('sync successful delete');
                     delete TrackulaApp.actions[id];
@@ -266,27 +315,11 @@ var TrackulaApp = TrackulaApp || {
     },
     insertAction: function(action, value, timestamp) {
         if (TrackulaApp.isOffline()) {
-            TrackulaApp.actions[guid()] = {
-                a: action,
-                v: value,
-                t: timestamp.unix(),
-                unsynced: true,
-                inserted: true
-            };
+            TrackulaApp.local.create(guid(), action, value, timestamp.unix(), true);
             D.log('inserted action offline');
         } else {
-            var record = TrackulaApp.table.insert({
-                action: action,
-                value: Dropbox.Datastore.int64(value),
-                timestamp: Dropbox.Datastore.int64(timestamp.unix())
-            });
-            TrackulaApp.actions[record.getId()] = {
-                a: record.get('action'),
-                v: record.get('value'),
-                t: record.get('timestamp'),
-                inserted: true,
-                unsynced: true
-            };
+            var record = TrackulaApp.remote.create(action, value, timestamp.unix());
+            TrackulaApp.local.create(record.getId(), action, value, timestamp.unix(), true);
             D.log('inserted action (temp)online');
         }
 
@@ -294,25 +327,10 @@ var TrackulaApp = TrackulaApp || {
         TrackulaApp.listActions();
     },
     editAction: function(id, obj) {
-        var action = TrackulaApp.actions[id];
-        if ('action' in obj) {
-            action.a = obj.action;
-        }
-        if ('value' in obj) {
-            action.v = obj.value;
-        }
-        if ('timestamp' in obj) {
-            action.t = obj.timestamp.unix();
-        }
-        action.edited = true;
-        action.unsynced = true;
-        TrackulaApp.actions[id] = action;
+        var action = TrackulaApp.local.update(id, obj.action, obj.value, obj.timestamp.unix(), true);
+
         if (!TrackulaApp.isOffline()) {
-            TrackulaApp.table.get(id).update({
-                action: action.a,
-                value: Dropbox.Datastore.int64(action.v),
-                timestamp: Dropbox.Datastore.int64(action.t)
-            });
+            TrackulaApp.remote.update(id, action.a, action.v, action.t);
             D.log('edited action (temp)online');
         } else {
             D.log('edited action offline');
@@ -322,11 +340,10 @@ var TrackulaApp = TrackulaApp || {
         TrackulaApp.listActions();
     },
     deleteAction: function(id) {
-        TrackulaApp.actions[id].deleted = true;
-        TrackulaApp.actions[id].unsynced = true;
+        TrackulaApp.local.delete(id);
 
         if (!TrackulaApp.isOffline()) {
-            TrackulaApp.table.get(id).deleteRecord();
+            TrackulaApp.remote.delete(id);
             D.log('deleted action (temp)online');
         } else {
             D.log('deleted action offline');
