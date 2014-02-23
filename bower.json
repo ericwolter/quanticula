@@ -8,7 +8,8 @@
     "normalize-css": "~3.0.0",
     "typeahead.js": "~0.10.0",
     "scrollfix": "*",
-    "lz-string": "*"
+    "lz-string": "*",
+    "jquery-hammerjs": "~1.0.1"
   },
   "devDependencies": {}
 }

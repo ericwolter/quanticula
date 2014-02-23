@@ -88,14 +88,6 @@ var Dialog = Dialog || {
     }
 };
 
-var swiper = {
-    triggerOnTouchEnd: true,
-    triggerOnTouchLeave: true,
-    allowPageScroll: 'vertical',
-    speed: 100,
-    threshold: 10
-};
-
 var bloodhound = new Bloodhound({
     datumTokenizer: function(d) {
         return Bloodhound.tokenizers.whitespace(d.val);
@@ -193,11 +185,9 @@ var TrackulaApp = TrackulaApp || {
             }, 150);
         });
 
-        swiper.swipeStatus = TrackulaApp.onSwipe;
-
         TrackulaApp.resetDatetime();
         $('form').submit(TrackulaApp.onSubmit);
-        $('.swipable').swipe(swiper);
+        TrackulaApp.bindSwipable();
 
         $('#action-input').focus(function() {
             $('#suggestions').show();
@@ -425,8 +415,7 @@ var TrackulaApp = TrackulaApp || {
         });
         bloodhound.initialize();
 
-        $('.swipable').swipe(swiper);
-
+        TrackulaApp.bindSwipable();
         D.log('listed actions');
     },
     onSubmit: function(ev) {
@@ -440,34 +429,38 @@ var TrackulaApp = TrackulaApp || {
         $('#action-input').val('');
         $('#datetime').val(moment().format('YYYY-MM-DDTHH:mm'));
     },
-    onSwipe: function(event, phase, direction, distance) {
-        var self = event.currentTarget;
-        //If we are moving before swipe, and we are going L or R, then manually drag the images
-        if (phase === 'move' && (direction === 'left' || direction === 'right')) {
-            var duration = 0;
+    bindSwipable: function() {
+        var swipable = $('.swipable').hammer();
 
-            if (direction === 'left') {
-                TrackulaApp.scrollListItems($(self), 0 + distance, duration);
-            } else if (direction === 'right') {
-                TrackulaApp.scrollListItems($(self), 0 - distance, duration);
+        var isSwiping = false;
+
+        $('#scrollable').hammer({
+            drag_lock_to_axis: true // jshint ignore:line
+        }).on('swipe drag', function(event) {
+            if (isSwiping) {
+                event.gesture.preventDefault();
             }
-        }
+        });
 
-        //Else, cancel means snap back to the begining
-        else if (phase === 'cancel') {
-            console.log('swipe cancel');
-            TrackulaApp.scrollListItems($(self), 0, swiper.speed);
-        }
+        swipable.on('drag', function(ev) {
+            if (isSwiping) {
+                TrackulaApp.scrollListItems($(ev.currentTarget), -ev.gesture.deltaX, 0);
+                ev.preventDefault();
+            } else {
+                isSwiping = Math.abs(ev.gesture.deltaX) > 10;
+            }
+        });
+        swipable.on('dragend', function(ev) {
+            isSwiping = false;
+            var target = $(ev.currentTarget);
+            TrackulaApp.scrollListItems(target, 0, 100);
 
-        //Else end means the swipe was completed, so move to the next image
-        else if (phase === 'end') {
-            console.log('swipe end');
-            TrackulaApp.scrollListItems($(self), 0, swiper.speed);
+            var distance = ev.gesture.deltaX;
 
-            var id = $(self).attr('data-record-id');
-            if (direction === 'left') {
-                var right = $(self).find('.right');
-                if (distance > parseInt(right.css('width'))) {
+            var id = target.attr('data-record-id');
+            if (distance < 0) {
+                var right = target.find('.right');
+                if (Math.abs(distance) > parseInt(right.css('width'))) {
                     $('.ew-content').css('filter', 'blur(10px)');
                     $('.ew-content').css('-webkit-filter', 'blur(10px)');
                     $('.ew-content').fadeTo(0, 0.2);
@@ -483,9 +476,9 @@ var TrackulaApp = TrackulaApp || {
                         $('.ew-content').fadeTo(0, 1.0);
                     });
                 }
-            } else if (direction === 'right') {
-                var left = $(self).find('.left');
-                if (distance > parseInt(left.css('width'))) {
+            } else if (distance > 0) {
+                var left = target.find('.left');
+                if (Math.abs(distance) > parseInt(left.css('width'))) {
                     $('.ew-content').css('filter', 'blur(10px)');
                     $('.ew-content').css('-webkit-filter', 'blur(10px)');
                     Dialog.show('Edit Action', templates.editcontrols(TrackulaApp.actions[id]), 'Yes. Change it.', 'No. Cancel.', function() {
@@ -509,7 +502,7 @@ var TrackulaApp = TrackulaApp || {
                     });
                 }
             }
-        }
+        });
     },
     scrollListItems: function(target, distance, duration) {
         target.css('-transition-duration', (duration / 1000).toFixed(1) + 's');
