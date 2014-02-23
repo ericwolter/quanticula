@@ -13,6 +13,33 @@ if (window.navigator.standalone) {
     $('meta[name="apple-mobile-web-app-status-bar-style"]').remove();
 }
 
+window.onblur = function() {
+    console.log('blur');
+}
+window.onfocus = function() {
+    console.log('focus');
+}
+window.onpagehide = function() {
+    console.log('pagehide');
+}
+window.onpageshow = function() {
+    console.log('pageshow');
+}
+
+// $(window).blur(function() {
+//     console.log('blur');
+// });
+// $(window).focus(function() {
+//     console.log('focus');
+// });
+// $(window).on('pagehide', function() {
+//     console.log('pagehide');
+// });
+// $(window).on('pageshow', function() {
+//     console.log('pageshow');
+// });
+
+
 function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
         .toString(16)
