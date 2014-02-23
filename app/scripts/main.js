@@ -15,16 +15,16 @@ if (window.navigator.standalone) {
 
 window.onblur = function() {
     console.log('blur');
-}
+};
 window.onfocus = function() {
     console.log('focus');
-}
+};
 window.onpagehide = function() {
     console.log('pagehide');
-}
+};
 window.onpageshow = function() {
     console.log('pageshow');
-}
+};
 
 // $(window).blur(function() {
 //     console.log('blur');

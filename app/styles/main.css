@@ -200,11 +200,26 @@ body
     -webkit-box-sizing: content-box!important;
        -moz-box-sizing: content-box!important;
             box-sizing: content-box!important;
-    width: 320px;
+    width: 100%;
     height: 50px;
 
     border-top: 1px solid #c0c0c0;
     background: #fff;
+}
+
+@media (min-width:500px)
+{
+    #google-adsense
+    {
+        height: 60px;
+    }
+}
+@media (min-width:800px)
+{
+    #google-adsense
+    {
+        height: 90px;
+    }
 }
 
 /*#google-adsense:after
