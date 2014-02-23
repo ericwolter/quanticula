@@ -90,8 +90,10 @@ var Dialog = Dialog || {
 
 var swiper = {
     triggerOnTouchEnd: true,
+    triggerOnTouchLeave: true,
     allowPageScroll: 'vertical',
-    speed: 100
+    speed: 100,
+    threshold: 10
 };
 
 var bloodhound = new Bloodhound({
@@ -453,11 +455,13 @@ var TrackulaApp = TrackulaApp || {
 
         //Else, cancel means snap back to the begining
         else if (phase === 'cancel') {
+            console.log('swipe cancel');
             TrackulaApp.scrollListItems($(self), 0, swiper.speed);
         }
 
         //Else end means the swipe was completed, so move to the next image
         else if (phase === 'end') {
+            console.log('swipe end');
             TrackulaApp.scrollListItems($(self), 0, swiper.speed);
 
             var id = $(self).attr('data-record-id');
