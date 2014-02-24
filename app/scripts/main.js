@@ -430,28 +430,15 @@ var TrackulaApp = TrackulaApp || {
         $('#datetime').val(moment().format('YYYY-MM-DDTHH:mm'));
     },
     bindSwipable: function() {
-        var swipable = $('.swipable').hammer();
-
-        var isSwiping = false;
-
-        $('#scrollable').hammer({
-            drag_lock_to_axis: true // jshint ignore:line
-        }).on('swipe drag', function(event) {
-            if (isSwiping) {
-                event.gesture.preventDefault();
-            }
+        var swipable = $('.swipable').hammer({
+            drag_block_horizontal: true,// jshint ignore:line
+            drag_lock_to_axis: true,// jshint ignore:line
         });
 
-        swipable.on('drag', function(ev) {
-            if (isSwiping) {
-                TrackulaApp.scrollListItems($(ev.currentTarget), -ev.gesture.deltaX, 0);
-                ev.preventDefault();
-            } else {
-                isSwiping = Math.abs(ev.gesture.deltaX) > 10;
-            }
+        swipable.on('dragleft dragright', function(ev) {
+            TrackulaApp.scrollListItems($(ev.currentTarget), -ev.gesture.deltaX, 0);
         });
         swipable.on('dragend', function(ev) {
-            isSwiping = false;
             var target = $(ev.currentTarget);
             TrackulaApp.scrollListItems(target, 0, 100);
 
