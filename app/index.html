@@ -43,7 +43,7 @@
         <h1>quanticula</h1>
         <ul class="st-list ew-list">
           <li><a href="">Home</a></li>
-          <li><a href="">Export</a></li>
+          <li><a id="export-link" href="">Export</a></li>
           <li><a href="">Import</a></li>
         </ul>
       </nav>
@@ -55,7 +55,7 @@
                   <fieldset>
                     <input id="timestamp-input" type="datetime-local" class="ew-input" step="60">  
                       <div id="st-trigger-effects">
-                        <button id="toggle-menu-button" data-effect="st-effect-1">☰</button>
+                        <button id="toggle-menu-button" data-effect="st-effect-1">&equiv;</button>
                       </div>
                     <input id="action-input" type="text" class="ew-input" placeholder="action" value="" required>
                     <input id="value-input" type="text" class="ew-input" placeholder="value" value="1">
@@ -115,6 +115,8 @@
     <script src="bower_components/lz-string/libs/lz-string-1.3.3.js"></script>
     <script src="bower_components/typeahead.js/dist/bloodhound.js"></script>
     <script src="bower_components/scrollfix/scrollfix.js"></script>
+    <script src="bower_components/blob/Blob.js"></script>
+    <script src="scripts/vendor/FileSaver.js"></script>
     <script src="scripts/logging.js"></script>
     <script src="scripts/templates.js"></script>
     <script src="scripts/main.js"></script>

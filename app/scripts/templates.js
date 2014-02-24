@@ -15,7 +15,7 @@ var templates = {
         return html;
     },
     editcontrols: function(r) {
-        var html = '<input id="datetime" type="datetime-local" class="ew-input" step="60" value="' + moment(r.t*1000).format('YYYY-MM-DDTHH:mm') + '">' +
+        var html = '<input id="timestamp-input" type="datetime-local" class="ew-input" step="60" value="' + moment(r.t*1000).format('YYYY-MM-DDTHH:mm') + '">' +
             '<input id="action-input" type="text" class="ew-input" placeholder="action" value="' + r.a + '" required>' +
             '<input id="value-input" type="text" class="ew-input" placeholder="value" value="' + r.v + '">';
         return html;

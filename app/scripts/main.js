@@ -5,6 +5,7 @@
 /* global LZString:false */
 /* global ScrollFix:false */
 /* global templates:false */
+/* global saveAs:false */
 /* global D:false */
 'use strict';
 
@@ -188,6 +189,21 @@ var TrackulaApp = TrackulaApp || {
             }, 0);
         });
 
+        $('#export-link').click(function() {
+            var csvContent = [];
+            csvContent.push('id;action;value;timestamp');
+            for (var id in TrackulaApp.actions) {
+                var action = TrackulaApp.actions[id];
+                csvContent.push(id + ';' + action.a + ';' + action.v + ';' + action.t);
+            }
+
+            csvContent = csvContent.join('\n');
+            var blob = new Blob([csvContent], {
+                type: 'text/csv;charset=utf-8'
+            });
+            saveAs(blob, 'quanticula--'+moment().format('YYYY-MM-DD--HH-mm-ss') + '.csv');
+        });
+
         TrackulaApp.resetDatetime();
         $('form').submit(TrackulaApp.onSubmit);
         TrackulaApp.bindSwipable();
@@ -333,7 +349,7 @@ var TrackulaApp = TrackulaApp || {
     },
     resetDatetime: function() {
         // set default datetime to now
-        $('#datetime').val(moment().format('YYYY-MM-DDTHH:mm'));
+        $('#timestamp-input').val(moment().format('YYYY-MM-DDTHH:mm'));
     },
     insertAction: function(action, value, timestamp) {
         if (TrackulaApp.isOffline()) {
@@ -423,14 +439,14 @@ var TrackulaApp = TrackulaApp || {
     },
     onSubmit: function(ev) {
         ev.preventDefault();
-        var timestamp = moment($('#datetime').val());
+        var timestamp = moment($('#timestamp-input').val());
         var action = $('#action-input').val();
         var value = $('#value-input').val();
 
         TrackulaApp.insertAction(action, value, timestamp);
 
         $('#action-input').val('');
-        $('#datetime').val(moment().format('YYYY-MM-DDTHH:mm'));
+        $('#timestamp-input').val(moment().format('YYYY-MM-DDTHH:mm'));
     },
     bindSwipable: function() {
         var swipable = $('.swipable').hammer({
@@ -482,7 +498,7 @@ var TrackulaApp = TrackulaApp || {
                         $('.ew-content').css('-webkit-filter', '');
                         $('.ew-content').fadeIn();
 
-                        var timestamp = moment($('#dialog #datetime').val());
+                        var timestamp = moment($('#dialog #timestamp-input').val());
                         var action = $('#dialog #action-input').val();
                         var value = $('#dialog #value-input').val();
 

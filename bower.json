@@ -10,7 +10,8 @@
     "scrollfix": "*",
     "lz-string": "*",
     "jquery-hammerjs": "~1.0.1",
-    "classie": "~1.0.0"
+    "classie": "~1.0.0",
+    "blob": "*"
   },
   "devDependencies": {}
 }
