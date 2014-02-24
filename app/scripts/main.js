@@ -179,11 +179,13 @@ var TrackulaApp = TrackulaApp || {
         var adsense = $('#google-adsense');
         var timer;
         $(scrollable).scroll(function() {
-            adsense.hide();
-            clearTimeout(timer);
-            timer = setTimeout(function() {
-                adsense.fadeIn();
-            }, 300);
+            setTimeout(function() {
+                adsense.hide();
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    adsense.fadeIn();
+                }, 300);
+            }, 0);
         });
 
         TrackulaApp.resetDatetime();
@@ -432,14 +434,20 @@ var TrackulaApp = TrackulaApp || {
     },
     bindSwipable: function() {
         var swipable = $('.swipable').hammer({
-            drag_block_horizontal: true,// jshint ignore:line
-            drag_lock_to_axis: true,// jshint ignore:line
+            drag_block_horizontal: true, // jshint ignore:line
+            drag_lock_to_axis: true, // jshint ignore:line
         });
 
+        var isSwiping = false;
         swipable.on('dragleft dragright', function(ev) {
             TrackulaApp.scrollListItems($(ev.currentTarget), -ev.gesture.deltaX, 0);
+            isSwiping = true;
         });
         swipable.on('dragend', function(ev) {
+            if (!isSwiping) {
+                return;
+            }
+            isSwiping = false;
             var target = $(ev.currentTarget);
             TrackulaApp.scrollListItems(target, 0, 100);
 

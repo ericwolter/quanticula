@@ -38,7 +38,7 @@ body
     margin-top: -100px;
 }
 
-.ew-btn
+#add-entry-button
 {
     width:    -moz-calc(100% - 20px);
     width: -webkit-calc(100% - 20px);
@@ -47,9 +47,37 @@ body
     margin: 10px 10px;
 }
 
-.ew-btn:active
+#add-entry-button:active
 {
     opacity: .6;
+}
+
+#timestamp-input {
+    display: inline;
+    width: calc(100% - 44px);   
+}
+
+#st-trigger-effects {
+    display: inline;
+    position: absolute;
+    right: 0;
+}
+
+#toggle-menu-button {
+    font-size: 24px;
+    line-height: 24px;
+
+    width: 44px;
+    height: 44px;
+
+    background: 0;
+
+    text-align: center;
+
+    border: 0;
+    padding-bottom: 4px;
+
+    -webkit-appearance: none;
 }
 
 #action-input
@@ -132,7 +160,7 @@ body
     font-size: 14px;
 
     position: fixed;
-    z-index: 2;
+    z-index: 999;
     top: 20%;
     left: 50%;
 
@@ -220,6 +248,42 @@ body
     {
         height: 90px;
     }
+}
+
+.st-menu h1
+{
+    font-size: 2em;
+    font-weight: 200;
+
+    margin: 0;
+    padding: 1em;
+
+    cursor: pointer;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+
+    color: #000;
+
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+}
+
+.st-menu a
+{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 66px;
+
+    display: block;
+
+    height: 66px;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    color: #000;
 }
 
 /*#google-adsense:after

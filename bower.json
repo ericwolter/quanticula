@@ -9,7 +9,8 @@
     "typeahead.js": "~0.10.0",
     "scrollfix": "*",
     "lz-string": "*",
-    "jquery-hammerjs": "~1.0.1"
+    "jquery-hammerjs": "~1.0.1",
+    "classie": "~1.0.0"
   },
   "devDependencies": {}
 }

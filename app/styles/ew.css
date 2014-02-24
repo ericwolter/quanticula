@@ -133,6 +133,8 @@ fieldset
     cursor: pointer;
 
     background: #fff;
+
+    translate3d: (0,0,0);
 }
 
 .swipable .left

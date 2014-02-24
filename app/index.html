@@ -1,119 +1,123 @@
 <!doctype html>
 <html manifest="cache.manifest">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>quanticula</title>
-  <meta name="description" content="Quanticula is a simple and easy tracker for collecting your daily data..">
-  <meta name="keywords" content="quanticula, quantified, quantifiedself, quantified self, quantify, personal, tracker, data, tracking, metrics, self, count, daily, collect, health, fitness, productivity">
-  <meta name="viewport" content="minimum-scale=1.0, width=device-width, maximum-scale=1, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />  
-
-  <!-- For iPad with high-resolution Retina display running iOS ≥ 7: -->
-  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/favicon-152.png">
-
-  <!-- For iPad with high-resolution Retina display running iOS ≤ 6: -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/favicon-144.png">
-
-  <!-- For iPhone with high-resolution Retina display running iOS ≥ 7: -->
-  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="images/favicon-120.png">
-
-  <!-- For iPhone with high-resolution Retina display running iOS ≤ 6: -->
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/favicon-114.png">
-
-  <!-- For first- and second-generation iPad: -->
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/favicon-72.png">
-
-  <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
-  <link rel="apple-touch-icon-precomposed" href="images/favicon-57.png">
-
-  <!-- IE 10 Metro tile icon (Metro equivalent of apple-touch-icon) -->
-  <meta name="msapplication-TileColor" content="#e5e9e8">
-<!--   <meta name="msapplication-TileImage" content="images/favicon-144.png"> 
- -->
- 
-  <link rel="icon" href="images/favicon-16.png" sizes="16x16"> 
-  <link rel="icon" href="images/favicon-24.png" sizes="24x24"> 
-  <link rel="icon" href="images/favicon-32.png" sizes="32x32"> 
-  <link rel="icon" href="images/favicon-48.png" sizes="48x48"> 
-
-  <!-- build:css(.tmp) styles/main.css -->
-  <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
-  <link rel="stylesheet" href="styles/icomatic.css">
-  <link rel="stylesheet" href="styles/ew.css">
-  <link rel="stylesheet" href="styles/main.css">
-  <!-- endbuild -->
-</head>
-<body>
-<div id="scrollable" class="ew-content">
-  <header class="ew-header">
-    <form>
-      <fieldset>
-        <input id="datetime" type="datetime-local" class="ew-input" step="60">
-        <input id="action-input" type="text" class="ew-input" placeholder="action" value="" required>
-        <input id="value-input" type="text" class="ew-input" placeholder="value" value="1">
-      </fieldset>
-      <button type="submit" class="ew-btn ew-btn-green">Add entry</button>
-    </form>
-  </header>
-
-  <div id="wrapper">
-    <ul id="actionlist" class="ew-list">
-    </ul>
-    <ul id="suggestions" class="ew-list">
-    </ul>
-  </div>
-
-
-</div>
-
-<div id="google-adsense">
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- quanticula_responsive -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-5717136270400903"
-     data-ad-slot="4582497103"
-     data-ad-format="horizontal"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-</div>
-
-<div id="dialog">
-  <h3 id="title">
-  </h3>
-  <div id="message">
-  </div>
-  <div class="controls">
-    <a id="no">Cancel</a>
-    <a id="yes">OK</a>
-  </div>
-</div>
-
-<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-<!--<script>
-  (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-    function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-  e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-  e.src='//www.google-analytics.com/analytics.js';
-  r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-  ga('create','UA-XXXXX-X');ga('send','pageview');
-</script>-->
-
-<!-- build:js({app,.tmp}) scripts/main.js -->
-<script src="bower_components/jquery/jquery.js"></script>
-<script src="bower_components/fastclick/lib/fastclick.js"></script>
-<script src="bower_components/moment/moment.js"></script>
-<script src="bower_components/jquery-hammerjs/jquery.hammer-full.js"></script>
-<script src="scripts/vendor/dropbox-datastores-1.0.0.js"></script>
-<script src="bower_components/lz-string/libs/lz-string-1.3.3.js"></script>
-<script src="bower_components/typeahead.js/dist/bloodhound.js"></script>
-<script src="bower_components/scrollfix/scrollfix.js"></script>
-<script src="scripts/logging.js"></script>
-<script src="scripts/templates.js"></script>
-<script src="scripts/main.js"></script>
-<!-- endbuild -->
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>quanticula</title>
+    <meta name="description" content="Quanticula is a simple and easy tracker for collecting your daily data..">
+    <meta name="keywords" content="quanticula, quantified, quantifiedself, quantified self, quantify, personal, tracker, data, tracking, metrics, self, count, daily, collect, health, fitness, productivity">
+    <meta name="viewport" content="minimum-scale=1.0, width=device-width, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- For iPad with high-resolution Retina display running iOS ≥ 7: -->
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/favicon-152.png">
+    <!-- For iPad with high-resolution Retina display running iOS ≤ 6: -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/favicon-144.png">
+    <!-- For iPhone with high-resolution Retina display running iOS ≥ 7: -->
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="images/favicon-120.png">
+    <!-- For iPhone with high-resolution Retina display running iOS ≤ 6: -->
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/favicon-114.png">
+    <!-- For first- and second-generation iPad: -->
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/favicon-72.png">
+    <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+    <link rel="apple-touch-icon-precomposed" href="images/favicon-57.png">
+    <!-- IE 10 Metro tile icon (Metro equivalent of apple-touch-icon) -->
+    <meta name="msapplication-TileColor" content="#e5e9e8">
+    <!--   <meta name="msapplication-TileImage" content="images/favicon-144.png"> 
+      -->
+    <link rel="icon" href="images/favicon-16.png" sizes="16x16">
+    <link rel="icon" href="images/favicon-24.png" sizes="24x24">
+    <link rel="icon" href="images/favicon-32.png" sizes="32x32">
+    <link rel="icon" href="images/favicon-48.png" sizes="48x48">
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
+    <link rel="stylesheet" href="styles/icomatic.css">
+    <link rel="stylesheet" href="styles/ew.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebarEffects.css">
+    <!-- endbuild -->
+  </head>
+  <body>
+    <div id="st-container" class="st-container">
+      <nav class="st-menu st-effect-1" id="menu-1">
+        <h1>quanticula</h1>
+        <ul class="st-list ew-list">
+          <li><a href="">Home</a></li>
+          <li><a href="">Export</a></li>
+          <li><a href="">Import</a></li>
+        </ul>
+      </nav>
+      <div class="st-pusher">
+        <div class="st-content">
+            <div id="scrollable" class="ew-content">
+              <header class="ew-header">
+                <form>
+                  <fieldset>
+                    <input id="timestamp-input" type="datetime-local" class="ew-input" step="60">  
+                      <div id="st-trigger-effects">
+                        <button id="toggle-menu-button" data-effect="st-effect-1">☰</button>
+                      </div>
+                    <input id="action-input" type="text" class="ew-input" placeholder="action" value="" required>
+                    <input id="value-input" type="text" class="ew-input" placeholder="value" value="1">
+                  </fieldset>
+                  <button id="add-entry-button" type="submit" class="ew-btn ew-btn-green">Add entry</button>
+                </form>
+              </header>
+              <div id="wrapper">
+                <ul id="actionlist" class="ew-list">
+                </ul>
+                <ul id="suggestions" class="ew-list">
+                </ul>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div id="google-adsense">
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- quanticula_responsive -->
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-5717136270400903"
+        data-ad-slot="4582497103"
+        data-ad-format="horizontal"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+    <div id="dialog">
+      <h3 id="title">
+      </h3>
+      <div id="message">
+      </div>
+      <div class="controls">
+        <a id="no">Cancel</a>
+        <a id="yes">OK</a>
+      </div>
+    </div>
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <!--<script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+        function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+      </script>-->
+    <!-- build:js({app,.tmp}) scripts/main.js -->
+    <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/fastclick/lib/fastclick.js"></script>
+    <script src="bower_components/classie/classie.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/jquery-hammerjs/jquery.hammer-full.js"></script>
+    <script src="scripts/vendor/dropbox-datastores-1.0.0.js"></script>
+    <script src="scripts/vendor/sidebarEffects.js"></script>
+    <script src="bower_components/lz-string/libs/lz-string-1.3.3.js"></script>
+    <script src="bower_components/typeahead.js/dist/bloodhound.js"></script>
+    <script src="bower_components/scrollfix/scrollfix.js"></script>
+    <script src="scripts/logging.js"></script>
+    <script src="scripts/templates.js"></script>
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+  </body>
 </html>
