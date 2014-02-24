@@ -176,13 +176,14 @@ var TrackulaApp = TrackulaApp || {
 
         var scrollable = document.getElementById('scrollable');
         new ScrollFix(scrollable);
+        var adsense = $('#google-adsense');
         var timer;
         $(scrollable).scroll(function() {
-            $('#google-adsense').hide();
+            adsense.hide();
             clearTimeout(timer);
             timer = setTimeout(function() {
-                $('#google-adsense').fadeIn();
-            }, 150);
+                adsense.fadeIn();
+            }, 300);
         });
 
         TrackulaApp.resetDatetime();
