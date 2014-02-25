@@ -36,8 +36,6 @@
                 classie.remove( container, 'st-menu-open' );
             },
             bodyClickFn = function(evt) {
-                console.log('click');
-                console.log(evt.target);
                 if( !hasParentClass( evt.target, 'st-list' ) ) {
                     resetMenu();
                     document.removeEventListener( eventtype, bodyClickFn );

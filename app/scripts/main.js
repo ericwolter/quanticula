@@ -14,18 +14,18 @@ if (window.navigator.standalone) {
     $('meta[name="apple-mobile-web-app-status-bar-style"]').remove();
 }
 
-window.onblur = function() {
-    console.log('blur');
-};
-window.onfocus = function() {
-    console.log('focus');
-};
-window.onpagehide = function() {
-    console.log('pagehide');
-};
-window.onpageshow = function() {
-    console.log('pageshow');
-};
+// window.onblur = function() {
+//     console.log('blur');
+// };
+// window.onfocus = function() {
+//     console.log('focus');
+// };
+// window.onpagehide = function() {
+//     console.log('pagehide');
+// };
+// window.onpageshow = function() {
+//     console.log('pageshow');
+// };
 
 // $(window).blur(function() {
 //     console.log('blur');
@@ -64,7 +64,7 @@ moment.lang('en', {
 });
 
 var client = new Dropbox.Client({
-    key: '3kvwzf94d0wkxwz'
+    key: '2mgct5jzoznrkdc'
 });
 
 var Dialog = Dialog || {
@@ -110,6 +110,7 @@ var TrackulaApp = TrackulaApp || {
             };
 
             if (local) {
+                D.log('local create unsynced');
                 obj.unsynced = true;
                 obj.inserted = true;
             }
@@ -131,12 +132,12 @@ var TrackulaApp = TrackulaApp || {
             }
 
             if (local) {
+                D.log('local update unsynced');
                 obj.unsynced = true;
                 obj.edited = true;
             }
 
             TrackulaApp.actions[id] = obj;
-
             return TrackulaApp.actions[id];
         },
         delete: function(id) {
@@ -151,7 +152,7 @@ var TrackulaApp = TrackulaApp || {
             return TrackulaApp.table.insert({
                 action: action,
                 value: Dropbox.Datastore.int64(value),
-                timestamp: Dropbox.Datastore.int64(timestamp.unix())
+                timestamp: Dropbox.Datastore.int64(timestamp)
             });
         },
         update: function(id, action, value, timestamp) {
@@ -163,7 +164,7 @@ var TrackulaApp = TrackulaApp || {
                 obj.value = Dropbox.Datastore.int64(value);
             }
             if (timestamp) {
-                obj.value = Dropbox.Datastore.int64(timestamp);
+                obj.timestamp = Dropbox.Datastore.int64(timestamp);
             }
 
             return TrackulaApp.table.get(id).update(obj);
@@ -189,7 +190,8 @@ var TrackulaApp = TrackulaApp || {
             }, 0);
         });
 
-        $('#export-link').click(function() {
+        $('#export-link').click(function(ev) {
+            ev.preventDefault();
             var csvContent = [];
             csvContent.push('id;action;value;timestamp');
             for (var id in TrackulaApp.actions) {
@@ -201,7 +203,30 @@ var TrackulaApp = TrackulaApp || {
             var blob = new Blob([csvContent], {
                 type: 'text/csv;charset=utf-8'
             });
-            saveAs(blob, 'quanticula--'+moment().format('YYYY-MM-DD--HH-mm-ss') + '.csv');
+            saveAs(blob, 'quanticula--' + moment().format('YYYY-MM-DD--HH-mm-ss') + '.csv');
+        });
+
+        $('#import-link').click(function(ev) {
+            ev.preventDefault();
+            $('#import-file').click();
+            $('#import-file').change(function() {
+                var file = this.files[0]; /* now you can work with the file list */
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var csv = reader.result;
+                    csv = csv.split('\n');
+                    csv.shift();
+                    csv.forEach(function(actionString) {
+                        actionString = actionString.split(';');
+                        TrackulaApp.table.getOrInsert(actionString[0], {
+                            action: actionString[1],
+                            value: Dropbox.Datastore.int64(actionString[2]),
+                            timestamp: Dropbox.Datastore.int64(actionString[3])
+                        });
+                    });
+                };
+                reader.readAsText(file);
+            });
         });
 
         TrackulaApp.resetDatetime();
@@ -271,13 +296,13 @@ var TrackulaApp = TrackulaApp || {
         } else {
             client.authenticate({}, function(error) {
                 if (error) {
-                    console.log('OAuth error (interactive:true): ' + error);
+                    D.log('OAuth error (interactive:true): ' + error);
                 }
             });
         }
     },
     isOffline: function() {
-        return TrackulaApp.table ? true : false;
+        return TrackulaApp.table ? false : true;
     },
     sync: function() {
         var id, record;
@@ -317,6 +342,8 @@ var TrackulaApp = TrackulaApp || {
                                 TrackulaApp.remote.update(id, action.a, action.v, action.t);
                             }
                         } else {
+                            delete TrackulaApp.actions[id].unsynced;
+                            delete TrackulaApp.actions[id].inserted;
                             TrackulaApp.local.update(record.getId(), record.get('action'), record.get('value'), record.get('timestamp'), false);
                             D.log('sync successful create');
                         }

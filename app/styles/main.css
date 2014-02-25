@@ -295,6 +295,14 @@ body
     color: #000;
 }
 
+#import-file {
+  /* Note: display:none on the input won't trigger the click event in WebKit.
+    Setting visibility: hidden and height/width:0 works great. */
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
 /*#google-adsense:after
 {
     font-size: 12px;
